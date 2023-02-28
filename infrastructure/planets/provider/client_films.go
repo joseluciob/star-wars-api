@@ -1,12 +1,16 @@
 package provider
 
-import "context"
+import (
+	"context"
+)
 
 type GetFilmsResponse struct {
-	Title       string
-	Director    string
-	ReleaseDate string
+	Title       string `json:"title"`
+	Director    string `json:"director"`
+	ReleaseDate string `json:"release_date"`
+	URL         string `json:"url"`
 }
 
 func (e *SwApi) GetFilms(ctx context.Context, link string) *GetFilmsResponse {
+	return &GetFilmsResponse{}
 }

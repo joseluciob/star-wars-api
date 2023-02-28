@@ -10,6 +10,7 @@ import (
 type Configs struct {
 	AppPrefix string `mapstructure:"app_prefix"`
 	Port      string `mapstructure:"http_port"`
+	SwApiBase string `mapstructure:"swapi_base"`
 	Http      Http   `mapstructure:",squash"`
 }
 
@@ -23,8 +24,9 @@ type Http struct {
 
 func New() (*Configs, error) {
 	viper.SetDefault("HTTP_PORT", "80")
-	viper.SetDefault("HTTP_READ_TIMEOUT", "1s")
-	viper.SetDefault("HTTP_WRITE_TIMEOUT", "1s")
+	viper.SetDefault("SWAPI_BASE", "https://swapi.dev/api")
+	viper.SetDefault("HTTP_READ_TIMEOUT", "5s")
+	viper.SetDefault("HTTP_WRITE_TIMEOUT", "5s")
 	viper.SetDefault("HTTP_MAX_IDLE_CONN_DURATION", "1h")
 	viper.SetDefault("HTTP_DIAL_CONCURRENCY", "4096")
 	viper.SetDefault("HTTP_DIAL_DNS_CACHE_DURATION", "1h")
