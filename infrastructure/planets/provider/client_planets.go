@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 
 	"github.com/valyala/fasthttp"
 )
 
 type Planet struct {
+	Id             int
 	Name           string   `json:"name"`
 	RotationPeriod string   `json:"rotation_period"`
 	OrbitalPeriod  string   `json:"orbital_period"`
@@ -58,5 +60,21 @@ func (e *SwApi) GetPlanets(ctx context.Context, page int) *GetPlanetsResponse {
 		// log
 	}
 
+	for _, planet := range response.Planets {
+		planet.Id = extractExternalIdFromURL(planet.URL)
+	}
+
 	return &response
+}
+
+func extractExternalIdFromURL(url string) int {
+	re := regexp.MustCompile(`/(.*)planets\/(\d*)/`)
+	match := re.FindStringSubmatch(url)
+
+	if len(match) == 2 {
+		value, _ := strconv.Atoi(match[2])
+		return value
+	}
+
+	return 0
 }

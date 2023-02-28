@@ -11,6 +11,7 @@ type Configs struct {
 	AppPrefix string `mapstructure:"app_prefix"`
 	Port      string `mapstructure:"http_port"`
 	SwApiBase string `mapstructure:"swapi_base"`
+	DB        DB     `mapstructure:",squash"`
 	Http      Http   `mapstructure:",squash"`
 }
 
@@ -20,6 +21,14 @@ type Http struct {
 	MaxIdleConnDuration  time.Duration `mapstructure:"http_max_idle_conn_duration"`
 	DialConcurrency      int           `mapstructure:"http_dial_concurrency"`
 	DialDnsCacheDuration time.Duration `mapstructure:"http_dial_dns_cache_duration"`
+}
+
+type DB struct {
+	User string `mapstructure:"db_user"`
+	Pass string `mapstructure:"db_password"`
+	Name string `mapstructure:"db_name"`
+	Host string `mapstructure:"db_host"`
+	Port string `mapstructure:"db_port"`
 }
 
 func New() (*Configs, error) {

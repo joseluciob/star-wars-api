@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	"star-wars-api/domain/planets/services"
+	"star-wars-api/application/commands"
 
 	"github.com/spf13/cobra"
 )
@@ -17,7 +17,7 @@ func NewImporterCommand() *cobra.Command {
 	cmd.AddCommand(&cobra.Command{
 		Use:   "planets",
 		Short: "Import all planets",
-		RunE:  services.ImportPlanetsCommand,
+		RunE:  commands.ImportPlanetsCommand,
 	})
 
 	return cmd
