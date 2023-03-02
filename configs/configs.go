@@ -34,8 +34,8 @@ type DB struct {
 func New() (*Configs, error) {
 	viper.SetDefault("HTTP_PORT", "80")
 	viper.SetDefault("SWAPI_BASE", "https://swapi.dev/api")
-	viper.SetDefault("HTTP_READ_TIMEOUT", "5s")
-	viper.SetDefault("HTTP_WRITE_TIMEOUT", "5s")
+	viper.SetDefault("HTTP_READ_TIMEOUT", "10s")
+	viper.SetDefault("HTTP_WRITE_TIMEOUT", "10s")
 	viper.SetDefault("HTTP_MAX_IDLE_CONN_DURATION", "1h")
 	viper.SetDefault("HTTP_DIAL_CONCURRENCY", "4096")
 	viper.SetDefault("HTTP_DIAL_DNS_CACHE_DURATION", "1h")

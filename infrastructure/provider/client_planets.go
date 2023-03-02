@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-	"regexp"
 	"strconv"
 
 	"github.com/valyala/fasthttp"
 )
 
+const RESOURCE_PLANETS = "planets"
+
 type Planet struct {
-	Id             int
+	ID             uint64
 	Name           string   `json:"name"`
 	RotationPeriod string   `json:"rotation_period"`
 	OrbitalPeriod  string   `json:"orbital_period"`
@@ -28,6 +28,7 @@ type Planet struct {
 	Created        string   `json:"created"`
 	Edited         string   `json:"edited"`
 	URL            string   `json:"url"`
+	FilmsId        []uint64
 }
 
 type GetPlanetsResponse struct {
@@ -37,10 +38,10 @@ type GetPlanetsResponse struct {
 	Previous string   `json:"previous"`
 }
 
-func (e *SwApi) GetPlanets(ctx context.Context, page int) *GetPlanetsResponse {
+func (e *SwApi) GetPlanets(ctx context.Context, page int) (*GetPlanetsResponse, error) {
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
-	req.SetRequestURI(fmt.Sprintf("%s/%s", e.config.SwApiBase, "/planets"))
+	req.SetRequestURI(fmt.Sprintf("%s/%s", e.config.SwApiBase, RESOURCE_PLANETS))
 	req.Header.SetMethod(fasthttp.MethodGet)
 	req.URI().QueryArgs().Add("page", strconv.Itoa(page))
 
@@ -49,32 +50,22 @@ func (e *SwApi) GetPlanets(ctx context.Context, page int) *GetPlanetsResponse {
 
 	err := e.HttpClient.Do(req, resp)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "ERR Connection error: %v\n", err)
-		// log
+		return nil, err
 	}
 
 	b := resp.Body()
 	response := GetPlanetsResponse{}
 	if err := json.Unmarshal(b, &response); err != nil {
-		fmt.Fprintf(os.Stderr, "ERR Connection error: %v\n", err)
-		// log
+		return nil, err
 	}
 
-	for _, planet := range response.Planets {
-		planet.Id = extractExternalIdFromURL(planet.URL)
+	for i, planet := range response.Planets {
+		response.Planets[i].ID = extractIdFromURL(planet.URL, RESOURCE_PLANETS)
+		for _, film := range planet.Films {
+			filmId := extractIdFromURL(film, "films")
+			response.Planets[i].FilmsId = append(response.Planets[i].FilmsId, filmId)
+		}
 	}
 
-	return &response
-}
-
-func extractExternalIdFromURL(url string) int {
-	re := regexp.MustCompile(`/(.*)planets\/(\d*)/`)
-	match := re.FindStringSubmatch(url)
-
-	if len(match) == 2 {
-		value, _ := strconv.Atoi(match[2])
-		return value
-	}
-
-	return 0
+	return &response, nil
 }

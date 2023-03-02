@@ -3,8 +3,9 @@ package commands
 import (
 	"log"
 	"star-wars-api/configs"
-	"star-wars-api/infrastructure/planets/persistence"
-	"star-wars-api/infrastructure/planets/provider"
+	"star-wars-api/domain/service"
+	"star-wars-api/infrastructure/persistence"
+	"star-wars-api/infrastructure/provider"
 
 	"github.com/spf13/cobra"
 )
@@ -22,21 +23,16 @@ func ImportPlanetsCommand(cmd *cobra.Command, _ []string) error {
 	defer repos.Close()
 	repos.Automigrate()
 
-	p, err := provider.New(cfg)
+	provider, err := provider.New(cfg)
 	if err != nil {
 		return err
 	}
 
-	page := 1
-	for {
+	film := service.NewFilmService(repos, provider)
+	film.Import(cmd.Context())
 
-		results := p.GetPlanets(cmd.Context(), page)
-		if results.Next == "" {
-			break
-		}
-
-		page = page + 1
-	}
+	planet := service.NewPlanetService(repos, provider)
+	planet.Import(cmd.Context())
 
 	return nil
 }

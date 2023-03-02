@@ -2,15 +2,18 @@ package provider
 
 import (
 	"context"
+	"regexp"
 	"star-wars-api/configs"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 )
 
 type Provider interface {
 	GetPlanets(ctx context.Context, page int) (*GetPlanetsResponse, error)
-	GetFilms(ctx context.Context, film string) (*GetFilmsResponse, error)
+	GetFilms(ctx context.Context, page int) (*GetFilmsResponse, error)
 }
+
 type SwApi struct {
 	config     *configs.Configs
 	HttpClient *fasthttp.Client
@@ -30,4 +33,16 @@ func New(cfg *configs.Configs) (*SwApi, error) {
 			}).Dial,
 		},
 	}, nil
+}
+
+func extractIdFromURL(url, resource string) uint64 {
+	re := regexp.MustCompile(`/(.*)` + resource + `\/(\d*)/`)
+	match := re.FindStringSubmatch(url)
+
+	if len(match) >= 2 {
+		value, _ := strconv.ParseUint(match[2], 10, 64)
+		return value
+	}
+
+	return 0
 }
