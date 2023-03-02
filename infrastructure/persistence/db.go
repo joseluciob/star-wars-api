@@ -8,6 +8,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repositories struct {
@@ -16,9 +17,18 @@ type Repositories struct {
 	db     *gorm.DB
 }
 
-func NewRepositories(dbConfig *configs.DB) (*Repositories, error) {
+func NewRepositories(config *configs.Configs) (*Repositories, error) {
+	dbConfig := config.DB
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Name, dbConfig.Pass)
-	db, err := gorm.Open(postgres.Open(DBURL), &gorm.Config{})
+
+	var logLevel logger.LogLevel = logger.Silent
+	if config.AppDebug {
+		logLevel = logger.Info
+	}
+
+	db, err := gorm.Open(postgres.Open(DBURL), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
 	if err != nil {
 		return nil, err
 	}

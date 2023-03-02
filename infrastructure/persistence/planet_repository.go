@@ -17,7 +17,7 @@ func NewPlanetRepository(db *gorm.DB) *PlanetRepo {
 
 func (r *PlanetRepo) Get(id uint64) (*entity.Planet, error) {
 	var planet entity.Planet
-	err := r.db.Debug().Preload("Films").Where("id = ?", id).Take(&planet).Error
+	err := r.db.Preload("Films").Where("id = ?", id).Take(&planet).Error
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (r *PlanetRepo) Get(id uint64) (*entity.Planet, error) {
 
 func (r *PlanetRepo) GetByName(name string) (*entity.Planet, error) {
 	var planet entity.Planet
-	err := r.db.Debug().Preload("Films").Where("name = ?", name).Take(&planet).Error
+	err := r.db.Preload("Films").Where("name = ?", name).Take(&planet).Error
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (r *PlanetRepo) GetByName(name string) (*entity.Planet, error) {
 }
 
 func (r *PlanetRepo) Save(planet *entity.Planet) (*entity.Planet, error) {
-	err := r.db.Debug().Clauses(clause.OnConflict{
+	err := r.db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		DoUpdates: clause.AssignmentColumns([]string{"name", "climate", "terrain"}),
 	}).Create(&planet).Error
@@ -49,7 +49,7 @@ func (r *PlanetRepo) Save(planet *entity.Planet) (*entity.Planet, error) {
 
 func (r *PlanetRepo) GetAll() ([]entity.Planet, error) {
 	var planets []entity.Planet
-	err := r.db.Debug().Preload("Films").Order("id asc").Find(&planets).Error
+	err := r.db.Preload("Films").Order("id asc").Find(&planets).Error
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *PlanetRepo) GetAll() ([]entity.Planet, error) {
 }
 
 func (r *PlanetRepo) Update(planet *entity.Planet) (*entity.Planet, error) {
-	err := r.db.Debug().Save(&planet).Error
+	err := r.db.Save(&planet).Error
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +65,12 @@ func (r *PlanetRepo) Update(planet *entity.Planet) (*entity.Planet, error) {
 }
 
 func (r *PlanetRepo) SyncFilms(planet *entity.Planet, films []entity.Film) {
-	r.db.Debug().Model(planet).Association("Films").Replace(films)
+	r.db.Model(planet).Association("Films").Replace(films)
 }
 
 func (r *PlanetRepo) Delete(id uint64) error {
 	var planet entity.Planet
-	err := r.db.Debug().Where("id = ?", id).Delete(&planet).Error
+	err := r.db.Where("id = ?", id).Delete(&planet).Error
 	if err != nil {
 		return err
 	}

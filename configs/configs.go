@@ -9,6 +9,7 @@ import (
 
 type Configs struct {
 	AppPrefix string `mapstructure:"app_prefix"`
+	AppDebug  bool   `mapstructure:"app_debug"`
 	Port      string `mapstructure:"http_port"`
 	SwApiBase string `mapstructure:"swapi_base"`
 	DB        DB     `mapstructure:",squash"`
@@ -33,6 +34,7 @@ type DB struct {
 
 func New() (*Configs, error) {
 	viper.SetDefault("HTTP_PORT", "80")
+	viper.SetDefault("APP_DEBUG", "true")
 	viper.SetDefault("SWAPI_BASE", "https://swapi.dev/api")
 	viper.SetDefault("HTTP_READ_TIMEOUT", "10s")
 	viper.SetDefault("HTTP_WRITE_TIMEOUT", "10s")

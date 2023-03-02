@@ -16,7 +16,7 @@ func ImportPlanetsCommand(cmd *cobra.Command, _ []string) error {
 		log.Fatal(err)
 	}
 
-	repos, err := persistence.NewRepositories(&cfg.DB)
+	repos, err := persistence.NewRepositories(cfg)
 	if err != nil {
 		panic(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"star-wars-api/application/handlers"
+	"star-wars-api/application/handlers/middleware"
 	"star-wars-api/configs"
 	"star-wars-api/domain/service"
 	"star-wars-api/infrastructure/common/logger"
@@ -21,7 +22,7 @@ func main() {
 	}
 	defer logger.Sync()
 
-	repos, err := persistence.NewRepositories(&cfg.DB)
+	repos, err := persistence.NewRepositories(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -33,9 +34,11 @@ func main() {
 	handler := handlers.NewPlanet(planet)
 
 	r := gin.Default()
-	r.GET("/planets", handler.GetAll)
-	r.GET("/planets/:id", handler.Get)
-	r.DELETE("/planets/:id", handler.Delete)
+	r.Use(middleware.CORSMiddleware())
+	apiV1 := r.Group("/api/v1")
+	apiV1.GET("/planets", handler.GetAll)
+	apiV1.GET("/planets/:id", middleware.IdentifierMiddleware(), handler.Get)
+	apiV1.DELETE("/planets/:id", middleware.IdentifierMiddleware(), handler.Delete)
 
 	log.Fatal(r.Run(":" + cfg.Port))
 

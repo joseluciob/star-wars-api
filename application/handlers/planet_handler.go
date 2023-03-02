@@ -37,12 +37,7 @@ func (pl *Planet) GetAll(c *gin.Context) {
 }
 
 func (pl *Planet) Get(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "only numbers are accepted as an identifier parameter"})
-		return
-	}
-
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	planet, err := pl.planetService.Get(id)
 	if err != nil {
 		error := error_h.ErrorHandler(err)
@@ -53,13 +48,8 @@ func (pl *Planet) Get(c *gin.Context) {
 }
 
 func (pl *Planet) Delete(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "only numbers are accepted as an identifier parameter"})
-		return
-	}
-
-	err = pl.planetService.Delete(id)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	err := pl.planetService.Delete(id)
 	if err != nil {
 		error := error_h.ErrorHandler(err)
 		c.JSON(error.Code, error.Message)

@@ -17,7 +17,7 @@ func NewFilmRepository(db *gorm.DB) *FilmRepo {
 
 func (r *FilmRepo) Get(id uint64) (*entity.Film, error) {
 	var film entity.Film
-	err := r.db.Debug().Where("id = ?", id).Take(&film).Error
+	err := r.db.Where("id = ?", id).Take(&film).Error
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (r *FilmRepo) Get(id uint64) (*entity.Film, error) {
 
 func (r *FilmRepo) Save(film *entity.Film) (*entity.Film, error) {
 
-	err := r.db.Debug().Clauses(clause.OnConflict{
+	err := r.db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		DoUpdates: clause.AssignmentColumns([]string{"title", "director", "release_date"}),
 	}).Create(&film).Error
@@ -44,7 +44,7 @@ func (r *FilmRepo) GetAll() ([]entity.Film, error) {
 }
 
 func (r *FilmRepo) Update(film *entity.Film) (*entity.Film, error) {
-	err := r.db.Debug().Save(&film).Error
+	err := r.db.Save(&film).Error
 	if err != nil {
 		return nil, err
 	}
