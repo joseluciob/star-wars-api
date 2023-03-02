@@ -1,0 +1,6 @@
+*.exe
+*.exe~
+*.idea
+.env
+__debug_bin
+logs/*
