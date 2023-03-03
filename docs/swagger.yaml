@@ -1,0 +1,155 @@
+basePath: /api/v1
+definitions:
+  entity.Film:
+    properties:
+      created_at:
+        type: string
+      director:
+        type: string
+      id:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.Planet:
+    properties:
+      climate:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      films:
+        items:
+          $ref: '#/definitions/entity.Film'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      terrain:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  httputil.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+host: localhost:8190
+info:
+  contact:
+    email: joseluciobj@gmail.com
+    name: José Barbosa
+  description: This api integrates with the service https://swapi.dev
+  title: SWApi
+  version: "1.0"
+paths:
+  /planets:
+    get:
+      consumes:
+      - application/json
+      description: get planets
+      parameters:
+      - description: Search planet by name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Planet'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.Error'
+      summary: List planets
+      tags:
+      - planets
+  /planets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete by planet ID
+      parameters:
+      - description: Planet ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/entity.Planet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.Error'
+      summary: Delete an planet
+      tags:
+      - planets
+    get:
+      consumes:
+      - application/json
+      description: get planet by ID
+      parameters:
+      - description: Planet ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Planet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.Error'
+      summary: Show an planet
+      tags:
+      - planets
+swagger: "2.0"

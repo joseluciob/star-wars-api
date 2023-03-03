@@ -1,4 +1,4 @@
-package errors
+package httputil
 
 import (
 	err "errors"
