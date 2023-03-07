@@ -1,0 +1,56 @@
+version: '3.9'
+services:
+  importer:
+    container_name: swapi_importer
+    env_file: .env
+    entrypoint: ["sh","-c", "/bin/importer planets"]
+    image: swapi_app
+    restart: "no"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    networks:
+      - learning
+  app:
+    container_name: swapi_app
+    image: swapi_app
+    tty: true
+    build: .
+    ports:
+      - 8190:8190
+    restart: on-failure
+    volumes:
+      - .:/app
+    depends_on:
+      - postgresdb
+    networks:
+      - learning
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - learning
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  pg_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  learning:
+    driver: bridge
