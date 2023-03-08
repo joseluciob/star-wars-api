@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"star-wars-api/configs"
@@ -11,6 +12,7 @@ import (
 
 func NewLogger(cfg *configs.Configs) (*zap.Logger, error) {
 	fileName := fmt.Sprintf("logs/%s.log", cfg.AppPrefix)
+	createDirLogs()
 
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -30,6 +32,13 @@ func NewLogger(cfg *configs.Configs) (*zap.Logger, error) {
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 
 	return logger, nil
+}
+
+func createDirLogs() {
+	path := "logs"
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		_ = os.Mkdir(path, os.ModePerm)
+	}
 }
 
 func ErrorField(err error) zap.Field {
