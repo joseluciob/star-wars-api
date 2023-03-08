@@ -32,6 +32,8 @@ Criar uma API para obter informações do serviço público https://swapi.dev. S
     * [Gin](https://github.com/gin-gonic/gin) - Web Framework
     * [Testify](https://github.com/stretchr/testify) - Testes 
     * [Zap](https://github.com/uber-go/zap) - Logs
+    * [GO-Sql Mock](https://github.com/DATA-DOG/go-sqlmock) - Sql driver mock
+    * [GO Mock](https://github.com/golang/mock) - Mocking Framework
 * Postgresql
 * Docker
 * Docker compose
