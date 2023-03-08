@@ -2,12 +2,11 @@ package main
 
 import (
 	"log"
-
 	"star-wars-api/application/handlers"
 	"star-wars-api/application/handlers/middleware"
 	"star-wars-api/configs"
 	"star-wars-api/domain/service"
-	"star-wars-api/infrastructure/common/logger"
+	logg "star-wars-api/infrastructure/common/logger"
 	"star-wars-api/infrastructure/persistence"
 	"star-wars-api/infrastructure/provider"
 
@@ -33,15 +32,15 @@ import (
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	cfg := cfg()
-	logger, err := logger.NewLogger(cfg)
+	logger, err := logg.NewLogger(cfg)
 	if err != nil {
-		log.Panic(err)
+		log.Panic("panic:", err)
 	}
 	defer logger.Sync()
 
 	repos, err := persistence.NewRepositories(cfg)
 	if err != nil {
-		panic(err)
+		logger.Panic("panic:", logg.ErrorField(err))
 	}
 	defer repos.Close()
 	repos.Automigrate()
@@ -58,14 +57,14 @@ func main() {
 	apiV1.DELETE("/planets/:id", middleware.IdentifierMiddleware(), handler.Delete)
 	apiV1.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	log.Fatal(r.Run(":" + cfg.Port))
+	logger.Info("App: ", logg.ErrorField(r.Run(":"+cfg.Port)))
 
 }
 
 func cfg() *configs.Configs {
 	cfg, err := configs.New()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("fatal error: ", err)
 	}
 
 	return cfg

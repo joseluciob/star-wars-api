@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log"
 	"star-wars-api/configs"
 	"star-wars-api/domain/service"
 	"star-wars-api/infrastructure/persistence"
@@ -13,12 +12,12 @@ import (
 func ImportPlanetsCommand(cmd *cobra.Command, _ []string) error {
 	cfg, err := configs.New()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	repos, err := persistence.NewRepositories(cfg)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer repos.Close()
 	repos.Automigrate()
@@ -29,10 +28,16 @@ func ImportPlanetsCommand(cmd *cobra.Command, _ []string) error {
 	}
 
 	film := service.NewFilmService(repos, provider)
-	film.Import(cmd.Context())
+	err = film.Import(cmd.Context())
+	if err != nil {
+		return err
+	}
 
 	planet := service.NewPlanetService(repos, provider)
-	planet.Import(cmd.Context())
+	err = planet.Import(cmd.Context())
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -32,10 +32,13 @@ func (s *PlanetService) Delete(id uint64) error {
 	return s.repos.Planet.Delete(id)
 }
 
-func (s *PlanetService) Import(context context.Context) {
+func (s *PlanetService) Import(context context.Context) error {
 	page := 1
 	for {
-		result, _ := s.provider.GetPlanets(context, page)
+		result, err := s.provider.GetPlanets(context, page)
+		if err != nil {
+			return err
+		}
 		for _, plan := range result.Planets {
 			planet := &entity.Planet{}
 			planet.ID = plan.ID
@@ -59,4 +62,5 @@ func (s *PlanetService) Import(context context.Context) {
 		}
 		page = page + 1
 	}
+	return nil
 }

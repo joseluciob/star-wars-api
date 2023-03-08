@@ -17,10 +17,13 @@ func NewFilmService(repos *persistence.Repositories, provider provider.Provider)
 	return &FilmService{repos, provider}
 }
 
-func (s *FilmService) Import(context context.Context) {
+func (s *FilmService) Import(context context.Context) error {
 	page := 1
 	for {
-		result, _ := s.provider.GetFilms(context, page)
+		result, err := s.provider.GetFilms(context, page)
+		if err != nil {
+			return err
+		}
 		for _, filmResult := range result.Films {
 			film := &entity.Film{}
 			film.ID = filmResult.ID
@@ -34,4 +37,5 @@ func (s *FilmService) Import(context context.Context) {
 		}
 		page = page + 1
 	}
+	return nil
 }
